@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TCS — TCS — Prise en charge d'un adulte presbyte actif | DPC Opticien Lunetier</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+  :root{
+    --bleu:#1a3a5c;--bleu-clair:#2e6da4;--or:#c9a84c;--or-clair:#f0d98a;
+    --fond:#f5f3ef;--blanc:#fff;--gris:#e8e4de;--gt:#6b6560;
+    --vert:#2d7a5e;--rouge:#b94040;--texte:#1c1a18;
+    --r:12px;--sh:0 4px 24px rgba(26,58,92,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--fond);color:var(--texte);min-height:100vh;}
+
+  /* ── HEADER ── */
+  header{background:var(--bleu);padding:20px 36px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--or);}
+  .logo{width:44px;height:44px;background:var(--or);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .logo::after{content:'';width:17px;height:17px;background:var(--bleu);border-radius:50%;box-shadow:0 0 0 3px var(--bleu-clair);}
+  .ht h1{font-family:'Libre Baskerville',serif;color:#fff;font-size:1.15rem;font-weight:700;}
+  .ht p{color:var(--or-clair);font-size:0.76rem;font-weight:300;letter-spacing:.05em;text-transform:uppercase;margin-top:2px;}
+  .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
+  .badge{background:var(--or);color:var(--bleu);font-size:.68rem;font-weight:700;padding:4px 11px;border-radius:18px;letter-spacing:.08em;text-transform:uppercase;}
+  .btn-formateur{background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.25);font-size:.72rem;padding:5px 12px;border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+  .btn-formateur:hover{background:rgba(255,255,255,.22);color:#fff;}
+
+  /* ── PROGRESS ── */
+  .pbar-wrap{background:var(--bleu);padding:0 36px 14px;display:none;}
+  .pbar-info{display:flex;justify-content:space-between;color:rgba(255,255,255,.6);font-size:.74rem;margin-bottom:5px;}
+  .pbar-track{background:rgba(255,255,255,.15);height:5px;border-radius:3px;overflow:hidden;}
+  .pbar-fill{height:100%;background:linear-gradient(90deg,var(--or),var(--or-clair));border-radius:3px;transition:width .5s;}
+
+  /* ── LAYOUT ── */
+  main{max-width:860px;margin:0 auto;padding:30px 20px 60px;}
+  .screen{display:none;}
+  .screen.active{display:block;animation:fi .3s ease;}
+  @keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+  /* ── COMPOSANTS ── */
+  .card{background:var(--blanc);border-radius:var(--r);box-shadow:var(--sh);padding:34px;}
+  .card-top{border-top:5px solid var(--or);}
+  .btn{border:none;padding:11px 28px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.93rem;font-weight:600;cursor:pointer;letter-spacing:.02em;transition:all .2s;}
+  .btn-p{background:var(--bleu);color:#fff;} .btn-p:hover{background:var(--bleu-clair);transform:translateY(-1px);}
+  .btn-s{background:transparent;color:var(--bleu);border:2px solid var(--bleu);} .btn-s:hover{background:var(--bleu);color:#fff;}
+  .btn-or{background:var(--or);color:var(--bleu);} .btn-or:hover{background:var(--or-clair);}
+  .input-f{width:100%;border:2px solid var(--gris);border-radius:8px;padding:10px 13px;font-family:'DM Sans',sans-serif;font-size:.93rem;color:var(--texte);background:var(--fond);transition:border-color .2s;margin-top:6px;}
+  .input-f:focus{outline:none;border-color:var(--bleu-clair);}
+  .warn{color:var(--rouge);font-size:.78rem;margin-top:5px;display:none;} .warn.v{display:block;}
+
+  /* ── INTRO ── */
+  .intro-card{text-align:center;}
+  .intro-card h2{font-family:'Libre Baskerville',serif;color:var(--bleu);font-size:1.55rem;margin-bottom:10px;}
+  .intro-card>p{color:var(--gt);line-height:1.7;max-width:500px;margin:0 auto 8px;font-size:.91rem;}
+  .thematique-chip{display:inline-block;background:var(--bleu);color:var(--or-clair);font-size:.76rem;font-weight:600;padding:5px 14px;border-radius:20px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:20px;}
+  .consigne-box{background:var(--fond);border-left:4px solid var(--bleu-clair);border-radius:8px;padding:16px 20px;margin:20px auto;max-width:540px;text-align:left;}
+  .consigne-box h3{color:var(--bleu);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+  .consigne-box li{list-style:none;padding:3px 0;font-size:.86rem;display:flex;gap:8px;}
+  .consigne-box li::before{content:'→';color:var(--or);font-weight:700;flex-shrink:0;}
+  .likert-leg{display:flex;justify-content:center;gap:5px;flex-wrap:wrap;margin:14px auto 0;}
+  .likert-leg span{background:var(--fond);border:1px solid var(--gris);border-radius:5px;padding:3px 9px;font-size:.78rem;}
+  .likert-leg span strong{color:var(--bleu);}
+  .id-bloc{margin:22px auto 0;max-width:440px;}
+  .id-bloc label{font-size:.84rem;font-weight:500;color:var(--bleu);}
+
+  /* ── TCS ── */
+  .tcs-label{font-size:.74rem;text-transform:uppercase;letter-spacing:.1em;color:var(--gt);margin-bottom:5px;}
+  .sit-card{background:var(--blanc);border-radius:var(--r);box-shadow:var(--sh);padding:26px 30px;margin-bottom:20px;border-left:5px solid var(--bleu);}
+  .sit-label{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--bleu-clair);margin-bottom:7px;font-weight:600;}
+  .sit-card p{line-height:1.75;font-size:.92rem;}
+  .hyp-card{background:var(--blanc);border-radius:var(--r);box-shadow:var(--sh);padding:22px 26px;margin-bottom:16px;border:2px solid transparent;transition:border-color .2s;}
+  .hyp-card.answered{border-color:var(--bleu-clair);}
+  .hyp-head{display:flex;align-items:flex-start;gap:11px;margin-bottom:14px;}
+  .hyp-badge{background:var(--bleu);color:#fff;font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:4px;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0;margin-top:2px;}
+  .hyp-text{font-size:.9rem;line-height:1.6;}
+  .likert-wrap{background:var(--fond);border-radius:8px;padding:13px;}
+  .likert-wrap p{text-align:center;font-size:.74rem;color:var(--gt);margin-bottom:7px;text-transform:uppercase;letter-spacing:.06em;}
+  .lscale{display:flex;gap:7px;align-items:center;justify-content:center;}
+  .llabels{display:flex;justify-content:space-between;font-size:.68rem;color:var(--gt);padding:0 4px;margin-top:3px;}
+  .lb{width:48px;height:48px;border-radius:50%;border:2px solid var(--gris);background:var(--fond);font-family:'DM Sans',sans-serif;font-weight:700;font-size:.92rem;cursor:pointer;transition:all .15s;color:var(--texte);}
+  .lb:hover{border-color:var(--bleu-clair);background:#e8f0f8;}
+  .lb.sn2{background:#b94040;border-color:#b94040;color:#fff;}
+  .lb.sn1{background:#d97070;border-color:#d97070;color:#fff;}
+  .lb.s0{background:#7a7a7a;border-color:#7a7a7a;color:#fff;}
+  .lb.sp1{background:#5a9e7a;border-color:#5a9e7a;color:#fff;}
+  .lb.sp2{background:#2d7a5e;border-color:#2d7a5e;color:#fff;}
+  .jarea{margin-top:12px;}
+  .jarea label{font-size:.78rem;color:var(--gt);font-weight:500;display:block;margin-bottom:4px;}
+  .jarea textarea{width:100%;border:1.5px solid var(--gris);border-radius:8px;padding:9px 11px;font-family:'DM Sans',sans-serif;font-size:.84rem;color:var(--texte);background:var(--fond);resize:vertical;min-height:64px;transition:border-color .2s;}
+  .jarea textarea:focus{outline:none;border-color:var(--bleu-clair);}
+  .tcs-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px;}
+
+  /* ── CORRECTION ── */
+  .ch{background:var(--bleu);border-radius:var(--r) var(--r) 0 0;padding:22px 30px;color:#fff;}
+  .ch h2{font-family:'Libre Baskerville',serif;font-size:1.15rem;margin-bottom:3px;}
+  .ch p{color:rgba(255,255,255,.65);font-size:.83rem;}
+  .cb{background:var(--blanc);border-radius:0 0 var(--r) var(--r);box-shadow:var(--sh);padding:30px;margin-bottom:18px;}
+  .hr{border:1.5px solid var(--gris);border-radius:10px;padding:18px 20px;margin-bottom:14px;}
+  .hr-title{font-size:.84rem;font-weight:600;color:var(--bleu);margin-bottom:12px;}
+  .ua-row{display:flex;align-items:center;gap:9px;padding:8px 11px;background:var(--fond);border-radius:7px;margin:9px 0;font-size:.83rem;}
+  .uval{font-weight:700;color:var(--bleu);font-size:.93rem;}
+  .ep-label{font-size:.73rem;color:var(--gt);text-transform:uppercase;letter-spacing:.06em;}
+  .ep{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0;}
+  .edot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.76rem;font-weight:700;color:#fff;}
+  .edot[data-val="-2"]{background:#b94040;} .edot[data-val="-1"]{background:#d97070;}
+  .edot[data-val="0"]{background:#7a7a7a;} .edot[data-val="1"]{background:#5a9e7a;} .edot[data-val="2"]{background:#2d7a5e;}
+  .ej{margin-top:10px;padding:11px 14px;background:#eef4fb;border-radius:8px;border-left:3px solid var(--bleu-clair);}
+  .ej h4{font-size:.73rem;text-transform:uppercase;letter-spacing:.06em;color:var(--bleu-clair);margin-bottom:5px;}
+  .ej p{font-size:.84rem;line-height:1.65;}
+  .hint{font-size:.73rem;color:var(--gt);font-style:italic;margin-top:5px;}
+
+  /* ── RÉSULTATS ── */
+  .sg{background:var(--bleu);border-radius:var(--r);padding:30px;text-align:center;color:#fff;margin-bottom:20px;box-shadow:var(--sh);}
+  .sg .lbl{font-size:.73rem;text-transform:uppercase;letter-spacing:.1em;color:var(--or-clair);margin-bottom:3px;}
+  .snum{font-family:'Libre Baskerville',serif;font-size:3.4rem;font-weight:700;color:var(--or);line-height:1;}
+  .spct{font-size:1.05rem;color:var(--or-clair);margin-top:3px;}
+  .sinterp{font-size:.82rem;color:rgba(255,255,255,.7);margin-top:7px;font-style:italic;}
+  .sbar{background:rgba(255,255,255,.15);height:7px;border-radius:4px;margin:14px auto;max-width:360px;overflow:hidden;}
+  .sbar-f{height:100%;background:linear-gradient(90deg,var(--or),var(--or-clair));border-radius:4px;transition:width 1s ease;}
+  .smeta{font-size:.74rem;color:rgba(255,255,255,.45);margin-top:5px;}
+  .syn{background:var(--blanc);border-radius:var(--r);box-shadow:var(--sh);padding:30px;margin-bottom:18px;}
+  .syn h3{font-family:'Libre Baskerville',serif;font-size:.98rem;color:var(--bleu);margin-bottom:16px;padding-bottom:9px;border-bottom:2px solid var(--gris);}
+  .dtable{width:100%;border-collapse:collapse;font-size:.83rem;}
+  .dtable th{background:var(--bleu);color:#fff;text-align:left;padding:7px 9px;font-size:.76rem;}
+  .dtable td{padding:7px 9px;border-bottom:1px solid var(--gris);vertical-align:top;}
+  .dtable tr:nth-child(even) td{background:#f9f8f5;}
+  .sg_{color:var(--vert);font-weight:700;} .sp_{color:#b07a00;font-weight:700;} .sl_{color:var(--rouge);font-weight:700;}
+  .mc{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--gris);}
+  .mc:last-child{border-bottom:none;}
+  .mcn{width:26px;height:26px;background:var(--or);color:var(--bleu);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0;margin-top:2px;}
+  .mct{font-size:.88rem;line-height:1.65;}
+  .mct strong{color:var(--bleu);}
+  .ri{display:flex;gap:11px;padding:11px 13px;border:1.5px solid var(--gris);border-radius:8px;margin-bottom:9px;transition:border-color .2s;}
+  .ri:hover{border-color:var(--bleu-clair);}
+  .ri-i{width:36px;height:36px;background:var(--fond);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+  .ri-d h4{font-size:.84rem;font-weight:600;color:var(--bleu);margin-bottom:2px;}
+  .ri-d p{font-size:.76rem;color:var(--gt);line-height:1.45;}
+  .ri-tag{display:inline-block;background:var(--fond);border:1px solid var(--gris);border-radius:3px;padding:1px 6px;font-size:.68rem;color:var(--gt);margin-top:3px;}
+  .fa{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:28px;}
+
+  /* ── MODE FORMATEUR ── */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:center;justify-content:center;}
+  .modal-bg.open{display:flex;}
+  .modal{background:var(--blanc);border-radius:var(--r);box-shadow:0 8px 48px rgba(0,0,0,.22);width:min(96vw,900px);max-height:90vh;overflow:auto;}
+  .modal-head{background:var(--bleu);padding:20px 28px;display:flex;align-items:center;justify-content:space-between;border-radius:var(--r) var(--r) 0 0;border-bottom:3px solid var(--or);}
+  .modal-head h2{font-family:'Libre Baskerville',serif;color:#fff;font-size:1.1rem;}
+  .modal-head p{color:var(--or-clair);font-size:.76rem;margin-top:2px;}
+  .modal-close{background:rgba(255,255,255,.15);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;}
+  .modal-close:hover{background:rgba(255,255,255,.28);}
+  .modal-body{padding:28px;}
+  .code-form{display:flex;gap:10px;align-items:flex-end;margin-bottom:20px;}
+  .code-form input{flex:1;} .code-warn{color:var(--rouge);font-size:.78rem;margin-top:4px;display:none;} .code-warn.v{display:block;}
+  .ftable{width:100%;border-collapse:collapse;font-size:.84rem;margin-top:16px;}
+  .ftable th{background:var(--bleu);color:#fff;text-align:left;padding:8px 10px;font-size:.76rem;}
+  .ftable td{padding:8px 10px;border-bottom:1px solid var(--gris);vertical-align:middle;}
+  .ftable tr:nth-child(even) td{background:#f9f8f5;}
+  .ftable-empty{text-align:center;color:var(--gt);padding:32px;font-size:.88rem;}
+  .export-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+  .export-bar span{font-size:.82rem;color:var(--gt);}
+  .stat-chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+  .stat-chip{background:var(--fond);border:1.5px solid var(--gris);border-radius:8px;padding:10px 16px;text-align:center;flex:1;min-width:120px;}
+  .stat-chip .sv{font-size:1.4rem;font-weight:700;color:var(--bleu);font-family:'Libre Baskerville',serif;}
+  .stat-chip .sl{font-size:.72rem;color:var(--gt);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+  .code-locked{display:none;}
+  .code-unlocked{display:none;}
+
+  /* ── PIN SCREEN ── */
+  .pin-wrap{max-width:360px;margin:0 auto;text-align:center;}
+  .pin-wrap h3{color:var(--bleu);font-family:'Libre Baskerville',serif;margin-bottom:10px;}
+  .pin-wrap p{font-size:.85rem;color:var(--gt);margin-bottom:20px;}
+  .pin-input{text-align:center;font-size:1.2rem;letter-spacing:.2em;font-weight:700;}
+
+  /* ── PRINT ── */
+  #pdf-zone{display:none;}
+  @media print{
+    body>header,.pbar-wrap,main,.modal-bg{display:none!important;}
+    #pdf-zone{display:block!important;}
+    body{background:#fff!important;font-family:'DM Sans',Georgia,serif;color:#1c1a18;font-size:10pt;margin:0;padding:0;}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .pp{padding:10mm 12mm;}
+    .ph{background:#1a3a5c!important;color:#fff!important;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid #c9a84c;margin-bottom:13px;border-radius:5px;}
+    .ph-l h1{font-size:11.5pt;font-weight:700;color:#fff!important;margin-bottom:2px;}
+    .ph-l p{font-size:7.5pt;color:#f0d98a!important;}
+    .ph-b{background:#c9a84c!important;color:#1a3a5c!important;font-size:7pt;font-weight:700;padding:4px 10px;border-radius:11px;letter-spacing:.08em;text-transform:uppercase;}
+    .pi{display:flex;gap:20px;flex-wrap:wrap;background:#f5f3ef!important;border:1.5px solid #e8e4de;border-radius:5px;padding:8px 12px;margin-bottom:12px;font-size:8.5pt;}
+    .pi span{color:#6b6560;}.pi strong{color:#1a3a5c;}
+    .psb{background:#1a3a5c!important;color:#fff!important;border-radius:7px;padding:12px 15px;display:flex;align-items:center;gap:16px;margin-bottom:13px;}
+    .psb-l .psl{font-size:7pt;color:#f0d98a!important;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1px;}
+    .psb-l .psn{font-size:25pt;font-weight:700;color:#c9a84c!important;font-family:Georgia,serif;line-height:1;}
+    .psb-l .psp{font-size:9.5pt;font-weight:600;color:#fff!important;margin-top:1px;}
+    .psb-r{flex:1;}
+    .psb-r .pst{background:rgba(255,255,255,.2)!important;height:6px;border-radius:3px;overflow:hidden;margin-top:3px;}
+    .psb-r .psf{height:100%;background:#c9a84c!important;border-radius:3px;}
+    .psb-r .psi{font-size:7pt;color:rgba(255,255,255,.7)!important;margin-top:4px;font-style:italic;}
+    .pst-t{font-size:7.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#1a3a5c;border-bottom:2px solid #e8e4de;padding-bottom:3px;margin:12px 0 7px;}
+    .pt{width:100%;border-collapse:collapse;font-size:7.5pt;margin-bottom:12px;}
+    .pt th{background:#1a3a5c!important;color:#fff!important;text-align:left;padding:5px 7px;font-size:7pt;}
+    .pt td{padding:5px 7px;border-bottom:1px solid #e8e4de;vertical-align:top;}
+    .pt tr:nth-child(even) td{background:#f9f8f5!important;}
+    .pg{color:#2d7a5e!important;font-weight:700;}.pp2{color:#b07a00!important;font-weight:700;}.pl{color:#b94040!important;font-weight:700;}
+    .pjb{border:1.5px solid #e8e4de;border-radius:5px;padding:7px 10px;margin-bottom:7px;page-break-inside:avoid;}
+    .pjb h4{font-size:7.5pt;font-weight:700;color:#1a3a5c;margin-bottom:3px;}
+    .pju{background:#f5f3ef!important;border-left:3px solid #c9a84c;padding:3px 7px;font-size:7pt;margin-bottom:3px;border-radius:0 3px 3px 0;}
+    .pjl{font-size:6.5pt;font-weight:600;color:#6b6560;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1px;}
+    .pje{background:#eef4fb!important;border-left:3px solid #2e6da4;padding:3px 7px;font-size:7pt;border-radius:0 3px 3px 0;line-height:1.5;}
+    .pmc{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid #e8e4de;font-size:7.5pt;line-height:1.5;page-break-inside:avoid;}
+    .pmc:last-child{border-bottom:none;}
+    .pmcn{width:17px;height:17px;background:#c9a84c!important;color:#1a3a5c!important;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:7pt;flex-shrink:0;min-width:17px;margin-top:1px;}
+    .pri{display:flex;gap:6px;font-size:7pt;padding:4px 0;border-bottom:1px solid #e8e4de;}
+    .pri:last-child{border-bottom:none;}
+    .pri h5{font-size:7.5pt;font-weight:600;color:#1a3a5c;margin-bottom:1px;}
+    .pri p{color:#6b6560;line-height:1.4;}
+    .prtag{display:inline-block;background:#f5f3ef!important;border:1px solid #e8e4de;border-radius:2px;padding:1px 5px;font-size:6pt;color:#6b6560;margin-top:1px;}
+    .pf{border-top:2px solid #e8e4de;margin-top:13px;padding-top:7px;display:flex;justify-content:space-between;font-size:6.5pt;color:#6b6560;}
+    .pb{page-break-before:always;}
+    .pnb{page-break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo"></div>
+  <div class="ht">
+    <h1 id="hTitle">TCS — Évaluation des Pratiques Professionnelles</h1>
+    <p id="hSub">Opticien Lunetier · DPC</p>
+  </div>
+  <div class="hright">
+    <button class="btn-formateur" onclick="openFormateur()">🔒 Mode formateur</button>
+    <div class="badge">DPC</div>
+  </div>
+</header>
+<div class="pbar-wrap" id="pbarWrap">
+  <div class="pbar-info"><span id="pbarLabel"></span><span id="pbarCount"></span></div>
+  <div class="pbar-track"><div class="pbar-fill" id="pbarFill" style="width:0%"></div></div>
+</div>
+
+<main>
+
+<!-- ═══ ÉCRAN 0 : INTRO ═══ -->
+<div class="screen active" id="screen-intro">
+  <div class="card card-top intro-card">
+    <div class="thematique-chip" id="chipTheme"></div>
+    <h2 id="introTitre">Test de Concordance de Script</h2>
+    <p id="introDesc">Évaluez vos pratiques professionnelles en vous positionnant sur des situations cliniques, puis comparez-vous à un panel d'experts.</p>
+    <div class="consigne-box">
+      <h3>Consignes de passation</h3>
+      <ul>
+        <li>Lisez attentivement chaque situation clinique</li>
+        <li>Pour chaque hypothèse, évaluez-la sur l'échelle −2 à +2</li>
+        <li>Rédigez une justification de votre raisonnement clinique</li>
+        <li>Après validation, comparez-vous au panel d'experts</li>
+        <li>Votre score sera révélé uniquement à la fin du parcours</li>
+      </ul>
+    </div>
+    <p style="font-weight:600;color:var(--bleu);margin-bottom:8px;font-size:.88rem;">Signification de l'échelle de Likert :</p>
+    <div class="likert-leg">
+      <span><strong>−2</strong> Contre-indiqué</span>
+      <span><strong>−1</strong> Plutôt déconseillé</span>
+      <span><strong>0</strong> Ni utile ni nuisible</span>
+      <span><strong>+1</strong> Plutôt utile</span>
+      <span><strong>+2</strong> Fortement recommandé</span>
+    </div>
+    <div class="id-bloc">
+      <label>Identifiant apprenant (nom ou code) :</label>
+      <input type="text" class="input-f" id="appId" placeholder="Ex : Martin.P ou code stagiaire…">
+      <p class="warn" id="warnId">Veuillez renseigner votre identifiant avant de commencer.</p>
+    </div>
+    <button class="btn btn-p" style="margin-top:18px;" onclick="startSession()">Commencer la session →</button>
+  </div>
+</div>
+
+<!-- ═══ ÉCRAN TCS ═══ -->
+<div class="screen" id="screen-tcs">
+  <div class="tcs-label" id="tcsLabel"></div>
+  <div class="sit-card"><div class="sit-label">📋 Situation clinique</div><p id="sitText"></p></div>
+  <div id="hypContainer"></div>
+  <div class="tcs-nav">
+    <span id="navInfo" style="color:var(--gt);font-size:.82rem;"></span>
+    <button class="btn btn-p" onclick="validerTCS()">Valider mes réponses →</button>
+  </div>
+</div>
+
+<!-- ═══ ÉCRAN CORRECTION ═══ -->
+<div class="screen" id="screen-correction">
+  <div class="ch"><h2 id="chTitle"></h2><p>Comparez vos réponses à celles du panel d'experts</p></div>
+  <div class="cb" id="cbBody"></div>
+  <div style="text-align:right;">
+    <button class="btn btn-p" id="btnNext" onclick="nextTCS()">TCS suivant →</button>
+    <button class="btn btn-p" id="btnRes" onclick="showResultats()" style="display:none;">Voir mon bilan →</button>
+  </div>
+</div>
+
+<!-- ═══ ÉCRAN RÉSULTATS ═══ -->
+<div class="screen" id="screen-resultats">
+  <div class="sg">
+    <div class="lbl">Score de concordance global</div>
+    <div class="snum" id="sNum">—</div>
+    <div class="spct" id="sPct"></div>
+    <div class="sbar"><div class="sbar-f" id="sBarF" style="width:0%"></div></div>
+    <div class="sinterp" id="sInterp"></div>
+    <div class="smeta" id="sMeta"></div>
+  </div>
+  <div class="syn"><h3>📊 Détail des scores par hypothèse</h3><div id="detailDiv"></div></div>
+  <div class="syn" id="synCard"><h3>🎯 Synthèse éducative — Messages clés</h3><div id="mcDiv"></div></div>
+  <div class="syn" id="resCard"><h3>📚 Ressources pédagogiques recommandées</h3><div id="resDiv"></div></div>
+  <div class="fa">
+    <button class="btn btn-s" onclick="resetSession()">↺ Nouvelle passation</button>
+    <button class="btn btn-p" onclick="imprimerBilan()">🖨️ Imprimer mon bilan PDF</button>
+  </div>
+</div>
+
+</main>
+
+<!-- ═══════════════════════════════════════
+     MODAL MODE FORMATEUR
+════════════════════════════════════════ -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-head">
+      <div><h2>Mode Formateur</h2><p id="fTitle">Tableau de bord des résultats</p></div>
+      <button class="modal-close" onclick="closeFormateur()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Zone code PIN -->
+      <div id="pinZone">
+        <div class="pin-wrap">
+          <h3>Accès sécurisé</h3>
+          <p>Saisissez le code formateur pour accéder au tableau de bord.</p>
+          <label style="font-size:.84rem;font-weight:500;color:var(--bleu);">Code d'accès :</label>
+          <input type="password" class="input-f pin-input" id="pinInput" placeholder="••••" maxlength="8" onkeydown="if(event.key==='Enter')checkPin()">
+          <p class="code-warn" id="pinWarn">Code incorrect. Réessayez.</p>
+          <button class="btn btn-p" style="margin-top:14px;" onclick="checkPin()">Accéder →</button>
+        </div>
+      </div>
+
+      <!-- Zone tableau (après authentification) -->
+      <div id="dashZone" style="display:none;">
+        <div class="stat-chips" id="statChips"></div>
+        <div class="export-bar">
+          <span id="dashInfo"></span>
+          <button class="btn btn-or" onclick="exportCSV()">⬇ Exporter CSV</button>
+        </div>
+        <table class="ftable" id="fTable">
+          <thead>
+            <tr>
+              <th>Identifiant</th>
+              <th>Date · Heure</th>
+              <th>Thématique</th>
+              <th style="text-align:center;">Score global</th>
+              <th style="text-align:center;">Concordance %</th>
+              <th style="text-align:center;">Niv. concordance</th>
+            </tr>
+          </thead>
+          <tbody id="fTableBody"></tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ZONE PDF -->
+<div id="pdf-zone"><div class="pp" id="pdfContent"></div></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DONNÉES TCS — À REMPLACER PAR CLAUDE POUR CHAQUE THÉMATIQUE
+// ═══════════════════════════════════════════════════════
+const TCS_CONFIG = {
+  thematique: "Presbytie & travail sur écran",
+  titre: "TCS — Prise en charge d'un adulte presbyte actif",
+  organisme: "Organisme de Formation DPC Opticien Lunetier",
+  date_creation: "2026-02",
+  code_formateur: "FORM26",   // code PIN pour le mode formateur
+
+  messages_cles: [
+{"num": 1, "texte": "<strong>L'anamnèse est le fondement du raisonnement clinique opticien.</strong> Avant tout bilan visuel, recueillir le motif, les antécédents et les conditions de travail permet d'orienter l'examen et d'anticiper les besoins de compensation."},
+    {"num": 2, "texte": "<strong>L'intolérance à un équipement est d'abord liée à une adaptation sensorielle ou mécanique.</strong> Exclure une erreur de prescription, une mauvaise centration ou un problème de monture avant toute réévaluation complète."},
+    {"num": 3, "texte": "<strong>La communication avec le patient est une compétence clinique à part entière.</strong> Expliquer les choix de compensation et fixer un suivi améliore l'adhésion au port et réduit les retours."}
+  ],
+
+  ressources: [
+{"icon": "🔬", "titre": "Référentiel de compétences — Opticien Lunetier", "description": "RNCP opticien lunetier — Compétences cliniques et relationnelles, fiche métier et référentiel activités.", "tag": "Référentiel métier"},
+    {"icon": "📖", "titre": "Module e-learning : Bilan visuel complet", "description": "Accessible sur votre espace LMS — Révision des étapes du bilan visuel et conduite à tenir face à un patient presbyte actif.", "tag": "E-learning · 45 min"},
+    {"icon": "🩺", "titre": "HAS — Recommandations sur le suivi visuel des adultes", "description": "Guide de bonnes pratiques sur les examens de la vision, seuils d'orientation ophtalmologique et coopération interprofessionnelle.", "tag": "HAS · Recommandation officielle"},
+    {"icon": "🎓", "titre": "Vidéo de simulation : gestion d'une intolérance", "description": "Cas clinique filmé avec débriefing expert — disponible dans votre parcours DPC sur la plateforme.", "tag": "Simulation numérique · 20 min"}
+  ],
+
+  tcs: [
+{
+      "id": 1,
+      "situation": "Mme R., 48 ans, cadre supérieure travaillant 8h/jour sur écran, se présente en magasin pour la première fois. Elle signale des maux de tête en fin de journée et une gêne croissante à la lecture depuis 6 mois. Son ancienne ordonnance date de 4 ans : OD +0,75 (+0,50 à 80°) — OG +0,50, addition +1,25. Elle ne porte pas de lunettes au quotidien. Elle n'a pas consulté d'ophtalmologiste depuis 3 ans.",
+      "hypotheses": [
+        {
+          "id": "H1",
+          "label": "Hypothèse A",
+          "texte": "Vous réalisez un bilan visuel complet (acuité, réfraction subjective, vision binoculaire, vision de près et intermédiaire) avant de proposer toute compensation.",
+          "experts": [
+            {
+              "id": "E1",
+              "val": 2
+            },
+            {
+              "id": "E2",
+              "val": 2
+            },
+            {
+              "id": "E3",
+              "val": 2
+            },
+            {
+              "id": "E4",
+              "val": 1
+            },
+            {
+              "id": "E5",
+              "val": 2
+            }
+          ],
+          "justif_experts": "Le panel est unanime : face à une presbyte active en première consultation, avec une ordonnance ancienne et une symptomatologie fonctionnelle (maux de tête, gêne lecture), un bilan visuel complet est indispensable avant tout acte de délivrance. L'Expert 4 note qu'une discussion préalable sur les attentes pourrait précéder le bilan."
+        },
+        {
+          "id": "H2",
+          "label": "Hypothèse B",
+          "texte": "Vous proposez directement un renouvellement de l'ordonnance en cours avec une augmentation de l'addition à +1,50, sans réaliser de nouveau bilan réfractif.",
+          "experts": [
+            {
+              "id": "E1",
+              "val": -2
+            },
+            {
+              "id": "E2",
+              "val": -2
+            },
+            {
+              "id": "E3",
+              "val": -1
+            },
+            {
+              "id": "E4",
+              "val": -2
+            },
+            {
+              "id": "E5",
+              "val": -2
+            }
+          ],
+          "justif_experts": "Le panel s'oppose fortement à cette approche : renouveler sans bilan en présence de symptômes et d'une ordonnance de 4 ans constitue une non-conformité aux bonnes pratiques. L'augmentation empirique de l'addition sans évaluation subjective risque d'aggraver l'asthénopie et de manquer une évolution réfractive significative."
+        },
+        {
+          "id": "H3",
+          "label": "Hypothèse C",
+          "texte": "Après bilan, vous orientez Mme R. vers l'ophtalmologiste en priorité avant toute délivrance, en raison des maux de tête et de l'ancienneté de l'ordonnance.",
+          "experts": [
+            {
+              "id": "E1",
+              "val": 1
+            },
+            {
+              "id": "E2",
+              "val": 0
+            },
+            {
+              "id": "E3",
+              "val": 1
+            },
+            {
+              "id": "E4",
+              "val": 0
+            },
+            {
+              "id": "E5",
+              "val": -1
+            }
+          ],
+          "justif_experts": "Le panel est partagé : orienter vers l'ophtalmologiste est légitime mais ne doit pas systématiquement précéder le bilan opticien. L'Expert 5 considère que cette orientation, sans bilan préalable réalisé par l'opticien, prive le patient d'une prise en charge immédiate accessible."
+        }
+      ]
+    }
+  ]
+};
+
+// ═══════════════════════════════════════════════════════
+// INITIALISATION
+// ═══════════════════════════════════════════════════════
+document.getElementById('chipTheme').textContent = TCS_CONFIG.thematique;
+document.getElementById('introTitre').textContent = TCS_CONFIG.titre || 'Test de Concordance de Script';
+document.getElementById('hTitle').textContent = 'TCS — ' + TCS_CONFIG.thematique;
+document.getElementById('hSub').textContent = (TCS_CONFIG.organisme || 'DPC Opticien Lunetier');
+document.getElementById('fTitle').textContent = TCS_CONFIG.thematique;
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let currentIdx = 0;
+let userAnswers = {};
+let apprenantId = '';
+const SESSION_KEY = 'tcs_sessions_' + TCS_CONFIG.thematique.replace(/\s/g,'_');
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════════════
+// SESSION
+// ═══════════════════════════════════════════════════════
+function startSession(){
+  const id = document.getElementById('appId').value.trim();
+  if(!id){document.getElementById('warnId').classList.add('v');return;}
+  document.getElementById('warnId').classList.remove('v');
+  apprenantId = id;
+  currentIdx = 0;
+  userAnswers = {};
+  document.getElementById('pbarWrap').style.display = 'block';
+  renderTCS(0);
+  showScreen('tcs');
+}
+
+function getLiCls(v){return{'-2':'sn2','-1':'sn1','0':'s0','1':'sp1','2':'sp2'}[String(v)]||'';}
+function fmtVal(v){return (v>0?'+':'')+v;}
+
+function renderTCS(idx){
+  const tcs = TCS_CONFIG.tcs[idx];
+  const tot = TCS_CONFIG.tcs.length;
+  document.getElementById('tcsLabel').textContent = `TCS N°${idx+1} / ${tot} — ${TCS_CONFIG.thematique}`;
+  document.getElementById('sitText').textContent = tcs.situation;
+  let html='';
+  tcs.hypotheses.forEach(hyp=>{
+    const ans = userAnswers[`${tcs.id}-${hyp.id}`];
+    html+=`<div class="hyp-card ${ans?'answered':''}" id="hc-${hyp.id}">
+      <div class="hyp-head"><span class="hyp-badge">${hyp.label}</span><span class="hyp-text">${hyp.texte}</span></div>
+      <div class="likert-wrap">
+        <p>Votre évaluation</p>
+        <div class="lscale">${[-2,-1,0,1,2].map(v=>{
+          const c=ans&&ans.val===v?getLiCls(v):'';
+          return`<button class="lb ${c}" id="lb-${tcs.id}-${hyp.id}-${v}" onclick="pickLikert(${tcs.id},'${hyp.id}',${v})">${fmtVal(v)}</button>`;
+        }).join('')}</div>
+        <div class="llabels"><span>Contre-indiqué</span><span>Fortement recommandé</span></div>
+        <div class="jarea"><label>Justification de votre choix :</label>
+          <textarea id="jt-${tcs.id}-${hyp.id}" placeholder="Votre raisonnement clinique…">${ans?.justif||''}</textarea>
+        </div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('hypContainer').innerHTML=html;
+  updatePbar(idx);
+}
+
+function pickLikert(tcsId,hypId,val){
+  [-2,-1,0,1,2].forEach(v=>{const b=document.getElementById(`lb-${tcsId}-${hypId}-${v}`);if(b)b.className='lb';});
+  const b=document.getElementById(`lb-${tcsId}-${hypId}-${val}`);
+  if(b)b.className=`lb ${getLiCls(val)}`;
+  const k=`${tcsId}-${hypId}`;
+  if(!userAnswers[k])userAnswers[k]={val:null,justif:''};
+  userAnswers[k].val=val;
+  const c=document.getElementById(`hc-${hypId}`);
+  if(c)c.classList.add('answered');
+  updatePbar(currentIdx);
+}
+
+function updatePbar(idx){
+  const tcs=TCS_CONFIG.tcs[idx];
+  const done=tcs.hypotheses.filter(h=>userAnswers[`${tcs.id}-${h.id}`]?.val!=null).length;
+  const totHyp=TCS_CONFIG.tcs.reduce((s,t)=>s+t.hypotheses.length,0);
+  const doneAll=Object.values(userAnswers).filter(a=>a?.val!=null).length;
+  document.getElementById('pbarLabel').textContent=`TCS ${idx+1}/${TCS_CONFIG.tcs.length} — ${done}/${tcs.hypotheses.length} hypothèses`;
+  document.getElementById('pbarCount').textContent=`${doneAll} / ${totHyp} réponses`;
+  document.getElementById('pbarFill').style.width=(doneAll/totHyp*100)+'%';
+}
+
+function validerTCS(){
+  const tcs=TCS_CONFIG.tcs[currentIdx];
+  const ok=tcs.hypotheses.every(h=>userAnswers[`${tcs.id}-${h.id}`]?.val!=null);
+  if(!ok){alert('Veuillez évaluer toutes les hypothèses avant de valider.');return;}
+  tcs.hypotheses.forEach(h=>{
+    const k=`${tcs.id}-${h.id}`;
+    const ta=document.getElementById(`jt-${tcs.id}-${h.id}`);
+    if(ta){if(!userAnswers[k])userAnswers[k]={val:null,justif:''};userAnswers[k].justif=ta.value;}
+  });
+  renderCorrection(currentIdx);
+  showScreen('correction');
+}
+
+function renderCorrection(idx){
+  const tcs=TCS_CONFIG.tcs[idx];
+  document.getElementById('chTitle').textContent=`Correction — TCS N°${idx+1}`;
+  let html='';
+  tcs.hypotheses.forEach(hyp=>{
+    const k=`${tcs.id}-${hyp.id}`;
+    const uv=userAnswers[k]?.val;
+    const uj=userAnswers[k]?.justif||'(non renseignée)';
+    const te=hyp.experts.length;
+    const sc=hyp.experts.filter(e=>e.val===uv).length;
+    const distrib=[-2,-1,0,1,2].map(v=>{
+      const c=hyp.experts.filter(e=>e.val===v).length;
+      return c>0?`<span style="font-size:.76rem;color:var(--gt);">${c} expert(s) : <strong style="color:var(--bleu)">${fmtVal(v)}</strong></span>`:'';
+    }).filter(Boolean).join(' &nbsp;|&nbsp; ');
+    const dots=hyp.experts.map(e=>`<div class="edot" data-val="${e.val}">${fmtVal(e.val)}</div>`).join('');
+    html+=`<div class="hr">
+      <div class="hr-title">${hyp.label} — ${hyp.texte.substring(0,90)}…</div>
+      <div class="ua-row"><span style="color:var(--gt);font-size:.8rem;">Votre réponse :</span><span class="uval">${fmtVal(uv)}</span><span style="color:var(--gt);font-size:.78rem;font-style:italic;">— ${uj}</span></div>
+      <span class="ep-label">Positionnement du panel (${te} experts) :</span>
+      <div class="ep">${dots}</div>
+      <div style="padding:6px 10px;background:var(--fond);border-radius:6px;font-size:.76rem;">${distrib}</div>
+      <p class="hint">💡 Votre score de concordance sera révélé dans le bilan final.</p>
+      <div class="ej"><h4>🔎 Justificatif du panel d'experts</h4><p>${hyp.justif_experts}</p></div>
+    </div>`;
+  });
+  document.getElementById('cbBody').innerHTML=html;
+  const isLast=currentIdx>=TCS_CONFIG.tcs.length-1;
+  document.getElementById('btnNext').style.display=isLast?'none':'inline-block';
+  document.getElementById('btnRes').style.display=isLast?'inline-block':'none';
+}
+
+function nextTCS(){
+  currentIdx++;
+  if(currentIdx<TCS_CONFIG.tcs.length){renderTCS(currentIdx);showScreen('tcs');}
+  else showResultats();
+}
+
+// ═══════════════════════════════════════════════════════
+// RÉSULTATS + SAUVEGARDE SESSION
+// ═══════════════════════════════════════════════════════
+function calcScores(){
+  let total=0,count=0;const perHyp=[];
+  TCS_CONFIG.tcs.forEach((tcs,ti)=>{
+    let tcsScore=0,tcsCount=0;
+    tcs.hypotheses.forEach(hyp=>{
+      const k=`${tcs.id}-${hyp.id}`;
+      const uv=userAnswers[k]?.val;
+      if(uv==null)return;
+      const te=hyp.experts.length;
+      const sc=hyp.experts.filter(e=>e.val===uv).length;
+      const s=sc/te;
+      total+=s;count++;tcsScore+=s;tcsCount++;
+      perHyp.push({ti,label:hyp.label,texte:hyp.texte,uv,uj:userAnswers[k]?.justif||'(non renseignée)',score:s,sc,te,je:hyp.justif_experts});
+    });
+  });
+  return{total,count,perHyp,pct:count>0?Math.round(total/count*100):0};
+}
+
+function showResultats(){
+  const {total,count,perHyp,pct}=calcScores();
+  const interp=pct>=70?'Bonne concordance avec le panel d\'experts':pct>=40?'Concordance partielle — axes de développement identifiés':'Faible concordance — formation complémentaire recommandée';
+  const dateStr=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+
+  document.getElementById('sNum').textContent=total.toFixed(2);
+  document.getElementById('sPct').textContent=`Concordance : ${pct}%`;
+  document.getElementById('sInterp').textContent=interp;
+  document.getElementById('sMeta').textContent=`Apprenant : ${apprenantId} · ${dateStr} · ${TCS_CONFIG.thematique}`;
+  document.getElementById('sBarF').style.width='0%';
+  setTimeout(()=>{document.getElementById('sBarF').style.width=pct+'%';},150);
+
+  // Table
+  let tr=`<table class="dtable"><thead><tr><th>Hypothèse</th><th>TCS</th><th>Réponse</th><th>Experts concordants</th><th>Score</th></tr></thead><tbody>`;
+  perHyp.forEach(h=>{
+    const c=h.score>=.70?'sg_':h.score>=.40?'sp_':'sl_';
+    tr+=`<tr><td><strong>${h.label}</strong><br><span style="color:var(--gt);font-size:.76rem;">${h.texte.substring(0,72)}…</span></td><td style="text-align:center;">N°${h.ti+1}</td><td style="text-align:center;font-weight:700;color:var(--bleu);">${fmtVal(h.uv)}</td><td style="text-align:center;">${h.sc}/${h.te}</td><td class="${c}" style="text-align:center;">${h.score.toFixed(2)}</td></tr>`;
+  });
+  tr+='</tbody></table>';
+  document.getElementById('detailDiv').innerHTML=tr;
+
+  // Messages clés
+  if(TCS_CONFIG.messages_cles?.length){
+    document.getElementById('synCard').style.display='block';
+    document.getElementById('mcDiv').innerHTML=TCS_CONFIG.messages_cles.map(m=>`<div class="mc"><div class="mcn">${m.num}</div><div class="mct">${m.texte}</div></div>`).join('');
+  } else document.getElementById('synCard').style.display='none';
+
+  // Ressources
+  if(TCS_CONFIG.ressources?.length){
+    document.getElementById('resCard').style.display='block';
+    document.getElementById('resDiv').innerHTML=TCS_CONFIG.ressources.map(r=>`<div class="ri"><div class="ri-i">${r.icon||'📄'}</div><div class="ri-d"><h4>${r.titre}</h4><p>${r.description}</p><span class="ri-tag">${r.tag||''}</span></div></div>`).join('');
+  } else document.getElementById('resCard').style.display='none';
+
+  // ── SAUVEGARDE SESSION ──
+  saveSession({apprenantId,total:total.toFixed(2),pct,interp,date:new Date().toISOString()});
+  showScreen('resultats');
+}
+
+// ── STOCKAGE SESSIONS (localStorage par thématique) ──
+function getSessions(){
+  try{return JSON.parse(localStorage.getItem(SESSION_KEY)||'[]');}catch{return[];}
+}
+function saveSession(data){
+  const sessions=getSessions();
+  sessions.push(data);
+  try{localStorage.setItem(SESSION_KEY,JSON.stringify(sessions));}catch(e){console.warn('localStorage non disponible',e);}
+}
+
+function resetSession(){
+  userAnswers={};currentIdx=0;
+  document.getElementById('appId').value='';
+  document.getElementById('pbarWrap').style.display='none';
+  showScreen('intro');
+}
+
+// ═══════════════════════════════════════════════════════
+// MODE FORMATEUR
+// ═══════════════════════════════════════════════════════
+let formAuthed=false;
+
+function openFormateur(){
+  document.getElementById('modalBg').classList.add('open');
+  if(!formAuthed){
+    document.getElementById('pinZone').style.display='block';
+    document.getElementById('dashZone').style.display='none';
+    document.getElementById('pinInput').value='';
+    document.getElementById('pinWarn').classList.remove('v');
+    setTimeout(()=>document.getElementById('pinInput').focus(),100);
+  } else {
+    renderDashboard();
+  }
+}
+function closeFormateur(){document.getElementById('modalBg').classList.remove('open');}
+document.getElementById('modalBg').addEventListener('click',e=>{if(e.target===document.getElementById('modalBg'))closeFormateur();});
+
+function checkPin(){
+  const pin=document.getElementById('pinInput').value.trim();
+  if(pin===TCS_CONFIG.code_formateur){
+    formAuthed=true;
+    document.getElementById('pinZone').style.display='none';
+    document.getElementById('dashZone').style.display='block';
+    renderDashboard();
+  } else {
+    document.getElementById('pinWarn').classList.add('v');
+  }
+}
+
+function renderDashboard(){
+  const sessions=getSessions();
+  document.getElementById('dashInfo').textContent=`${sessions.length} session(s) enregistrée(s) — ${TCS_CONFIG.thematique}`;
+
+  // Stats
+  const avg=sessions.length?Math.round(sessions.reduce((s,r)=>s+parseInt(r.pct),0)/sessions.length):0;
+  const good=sessions.filter(r=>parseInt(r.pct)>=70).length;
+  document.getElementById('statChips').innerHTML=`
+    <div class="stat-chip"><div class="sv">${sessions.length}</div><div class="sl">Apprenants</div></div>
+    <div class="stat-chip"><div class="sv">${avg}%</div><div class="sl">Score moyen</div></div>
+    <div class="stat-chip"><div class="sv">${good}</div><div class="sl">Bonne concordance (≥70%)</div></div>
+    <div class="stat-chip"><div class="sv">${sessions.length-good}</div><div class="sl">À accompagner</div></div>`;
+
+  // Table
+  if(!sessions.length){
+    document.getElementById('fTableBody').innerHTML=`<tr><td colspan="6" class="ftable-empty">Aucune session enregistrée pour cette thématique.</td></tr>`;
+    return;
+  }
+  document.getElementById('fTableBody').innerHTML=sessions.map(s=>{
+    const d=new Date(s.date);
+    const dateF=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
+    const heureF=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    const niv=parseInt(s.pct)>=70?'<span class="sg_">Bonne</span>':parseInt(s.pct)>=40?'<span class="sp_">Partielle</span>':'<span class="sl_">Faible</span>';
+    return`<tr><td><strong>${s.apprenantId}</strong></td><td>${dateF} · ${heureF}</td><td>${TCS_CONFIG.thematique}</td><td style="text-align:center;font-weight:700;color:var(--bleu);">${s.total}</td><td style="text-align:center;">${s.pct}%</td><td style="text-align:center;">${niv}</td></tr>`;
+  }).join('');
+}
+
+function exportCSV(){
+  const sessions=getSessions();
+  if(!sessions.length){alert('Aucune donnée à exporter.');return;}
+  const header='Identifiant;Date;Heure;Thématique;Score global;Concordance %;Niveau concordance';
+  const rows=sessions.map(s=>{
+    const d=new Date(s.date);
+    return[s.apprenantId,d.toLocaleDateString('fr-FR'),d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),TCS_CONFIG.thematique,s.total,s.pct+'%',s.interp].join(';');
+  });
+  const csv=[header,...rows].join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`TCS_resultats_${TCS_CONFIG.thematique.replace(/\s/g,'_')}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();URL.revokeObjectURL(url);
+}
+
+// ═══════════════════════════════════════════════════════
+// IMPRESSION PDF
+// ═══════════════════════════════════════════════════════
+function imprimerBilan(){
+  const {total,count,perHyp,pct}=calcScores();
+  const interp=pct>=70?'Bonne concordance avec le panel d\'experts':pct>=40?'Concordance partielle — axes de développement identifiés':'Faible concordance — formation complémentaire recommandée';
+  const dateStr=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+
+  let tr='';
+  perHyp.forEach(h=>{
+    const c=h.score>=.70?'pg':h.score>=.40?'pp2':'pl';
+    tr+=`<tr><td><strong>${h.label}</strong><br><span style="color:#6b6560;font-size:7pt;">${h.texte.substring(0,85)}…</span></td><td style="text-align:center;">N°${h.ti+1}</td><td style="text-align:center;font-weight:700;color:#1a3a5c;">${fmtVal(h.uv)}</td><td style="text-align:center;">${h.sc}/${h.te}</td><td class="${c}" style="text-align:center;">${h.score.toFixed(2)}</td></tr>`;
+  });
+  let jb='';
+  perHyp.forEach(h=>{jb+=`<div class="pjb pnb"><h4>${h.label} (TCS N°${h.ti+1}) — ${h.texte.substring(0,85)}…</h4><div class="pju"><div class="pjl">Votre réponse : ${fmtVal(h.uv)}</div>${h.uj}</div><div class="pje"><div class="pjl">Justificatif du panel d'experts</div>${h.je}</div></div>`;});
+  const mc=TCS_CONFIG.messages_cles?.length?TCS_CONFIG.messages_cles.map(m=>`<div class="pmc pnb"><div class="pmcn">${m.num}</div><div>${m.texte}</div></div>`).join(''):'';
+  const rs=TCS_CONFIG.ressources?.length?TCS_CONFIG.ressources.map(r=>`<div class="pri pnb"><div><h5>${r.titre}</h5><p>${r.description}</p><span class="prtag">${r.tag||''}</span></div></div>`).join(''):'';
+
+  document.getElementById('pdfContent').innerHTML=`
+  <div class="ph"><div class="ph-l"><h1>TCS — Bilan individuel EPP · ${TCS_CONFIG.thematique}</h1><p>${TCS_CONFIG.titre||TCS_CONFIG.thematique} · Opticien Lunetier · Parcours DPC</p></div><span class="ph-b">DPC</span></div>
+  <div class="pi"><div><span>Apprenant : </span><strong>${apprenantId}</strong></div><div><span>Date : </span><strong>${dateStr}</strong></div><div><span>Thématique : </span><strong>${TCS_CONFIG.thematique}</strong></div><div><span>Hypothèses : </span><strong>${count}</strong></div></div>
+  <div class="psb"><div class="psb-l"><div class="psl">Score de concordance global</div><div class="psn">${total.toFixed(2)}</div><div class="psp">Concordance : ${pct}%</div></div><div class="psb-r"><div class="pst"><div class="psf" style="width:${pct}%;"></div></div><div class="psi">${interp}</div></div></div>
+  <div class="pst-t">Détail des scores par hypothèse</div>
+  <table class="pt"><thead><tr><th style="width:48%;">Hypothèse</th><th style="width:9%;text-align:center;">TCS</th><th style="width:12%;text-align:center;">Réponse</th><th style="width:16%;text-align:center;">Concordance</th><th style="width:15%;text-align:center;">Score</th></tr></thead><tbody>${tr}</tbody></table>
+  <div class="pb"></div>
+  <div class="pst-t">Analyse détaillée — Justifications &amp; retour expert</div>${jb}
+  ${mc||rs?'<div class="pb"></div>':''}
+  ${mc?`<div class="pst-t">Synthèse éducative — Messages clés</div>${mc}`:''}
+  ${rs?`<div class="pst-t" style="margin-top:11px;">Ressources pédagogiques recommandées</div>${rs}`:''}
+  <div class="pf"><div><strong>${TCS_CONFIG.organisme||'Organisme de Formation DPC'}</strong> · Document confidentiel réservé à l'apprenant</div><div>Généré le ${dateStr} · Conforme QUALIOPI</div></div>`;
+
+  setTimeout(()=>window.print(),200);
+}
+</script>
+</body>
+</html>
